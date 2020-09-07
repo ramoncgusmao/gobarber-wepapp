@@ -8,7 +8,6 @@ interface ToastContainerProps {
 
 const ToastContainer: React.FC<ToastContainerProps> = ({ messages }) => {
   
-  const { removeToast } = useToast();
   
   return (
     <Container >

@@ -3,6 +3,7 @@ import { isToday, format, parseISO, isAfter } from 'date-fns';
 import ptBr from 'date-fns/locale/pt-BR';
 import DayPicker, { DayModifiers } from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
+import {Link} from 'react-router-dom';
 import {
   Container, Header, HeaderContent, Profile,
   Content, Schedule, NextAppointment, Section, Appointment, Calendar
@@ -119,6 +120,8 @@ const Dashboard: React.FC = () => {
     return appointments.find(appointment => isAfter(parseISO(appointment.date), new Date()),
     );
   }, [appointments]);
+
+  
   return (
     <Container>
       <Header>
@@ -132,7 +135,8 @@ const Dashboard: React.FC = () => {
             />
             <div>
               <span>Bem-vindo,</span>
-              <strong>{user.name}</strong>
+             <Link to="/profile"> <strong>{user.name}</strong>
+             </Link>
             </div>
           </Profile>
 

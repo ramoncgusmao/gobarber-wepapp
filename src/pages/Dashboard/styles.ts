@@ -160,7 +160,7 @@ export const NextAppointment = styled.div`
 
 export const Section = styled.section`
   
-  margin-top: 48;
+  margin-top: 48px;
 
   > strong {
     color: #999591;
@@ -170,6 +170,9 @@ export const Section = styled.section`
     display: block;
     padding-bottom: 16px;
     margin-bottom: 16px;
+  }
+  > p {
+    color: #999591;
   }
 `;
 

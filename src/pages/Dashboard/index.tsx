@@ -1,11 +1,27 @@
-import React from 'react';
-import {Container, Header, HeaderContent, Profile} from './styles';
+import React, { useState, useCallback } from 'react';
+import DayPicker, { DayModifiers } from 'react-day-picker';
+import 'react-day-picker/lib/style.css';
+import {Container, Header, HeaderContent, Profile, 
+  Content, Schedule,NextAppointment,Section,Appointment, Calendar } from './styles';
 import logoImg from '../../assets/logo.svg';
-import { FiPower } from 'react-icons/fi';
+import { FiPower, FiClock } from 'react-icons/fi';
 import { useAuth } from '../../hooks/Auth';
+import { date } from 'yup';
+
 const Dashboard: React.FC = () => {
+  
+  const [selectedDate, setSelectDate] = useState(new Date());
   const { signOut, user } = useAuth();
   console.log(user);
+
+  const handleDateChange = useCallback( (day: Date, modifiers: DayModifiers) => {
+    if(modifiers.available){
+      setSelectDate(day);
+    }
+    console.log(day);
+  }, []);
+
+
   return(
         <Container>
           <Header>
@@ -27,9 +43,130 @@ const Dashboard: React.FC = () => {
                 <FiPower />
               </button>
             </HeaderContent>
-
-
           </Header>
+          <Content>
+            <Schedule>
+              <h1>Horarios agendados</h1>
+              <p>
+                <span>Hoje</span>
+                <span>Dia 06</span>
+                <span>Segunda-feira</span>
+              </p>
+              <NextAppointment>
+                <strong>Atendimento a seguir</strong>
+                <div>
+                  <img 
+                    src="https://xesque.rocketseat.dev/users/avatar/profile-899a2715-66b5-469c-bf09-b50fcfe46338.jpg"
+                    alt="Diego Fernandes"
+                    />
+                    <strong>Diego Fernandes</strong>
+                    <span>
+                      <FiClock />
+                      08:00</span>
+                </div>
+              </NextAppointment>
+              <Section>
+                <strong>Manhã</strong>
+                <Appointment>
+                  <span>
+                    <FiClock />
+                    08:00
+                  </span>
+                  <div>
+                  <img 
+                    src="https://xesque.rocketseat.dev/users/avatar/profile-899a2715-66b5-469c-bf09-b50fcfe46338.jpg"
+                    alt="Diego Fernandes"
+                    />
+                      <strong>Diego Fernandes</strong>
+                  </div>
+                </Appointment>
+                <Appointment>
+                  <span>
+                    <FiClock />
+                    08:00
+                  </span>
+                  <div>
+                  <img 
+                    src="https://xesque.rocketseat.dev/users/avatar/profile-899a2715-66b5-469c-bf09-b50fcfe46338.jpg"
+                    alt="Diego Fernandes"
+                    />
+                      <strong>Diego Fernandes</strong>
+                  </div>
+                </Appointment>
+              </Section>
+              <Section>
+                <strong>Tarde</strong>
+                <Appointment>
+                  <span>
+                    <FiClock />
+                    08:00
+                  </span>
+                  <div>
+                  <img 
+                    src="https://xesque.rocketseat.dev/users/avatar/profile-899a2715-66b5-469c-bf09-b50fcfe46338.jpg"
+                    alt="Diego Fernandes"
+                    />
+                      <strong>Diego Fernandes</strong>
+                  </div>
+                </Appointment>
+    
+              <Appointment>
+                  <span>
+                    <FiClock />
+                    08:00
+                  </span>
+                  <div>
+                  <img 
+                    src="https://xesque.rocketseat.dev/users/avatar/profile-899a2715-66b5-469c-bf09-b50fcfe46338.jpg"
+                    alt="Diego Fernandes"
+                    />
+                      <strong>Diego Fernandes</strong>
+                  </div>
+                </Appointment>
+        
+              <Appointment>
+                  <span>
+                    <FiClock />
+                    08:00
+                  </span>
+                  <div>
+                  <img 
+                    src="https://xesque.rocketseat.dev/users/avatar/profile-899a2715-66b5-469c-bf09-b50fcfe46338.jpg"
+                    alt="Diego Fernandes"
+                    />
+                      <strong>Diego Fernandes</strong>
+                  </div>
+                </Appointment>
+  
+              </Section>
+            </Schedule>
+            <Calendar>
+              <DayPicker 
+                weekdaysShort={['D', 'S','T','Q', 'Q','S','S']}
+                fromMonth={ new Date()}
+                disabledDays={[{daysOfWeek: [0,6]}]}
+                modifiers={{
+                  available: { daysOfWeek: [1,2,3,4,5]}
+                }}
+                selectedDays={selectedDate}
+                onDayClick={handleDateChange}
+                months={[
+                  'Janeiro',
+                  'Fevereiro',
+                  'Março',
+                  'Abril',
+                  'Maio',
+                  'Junho',
+                  'Julho',
+                  'Agosto',
+                  'Setembro',
+                  'Outubro',
+                  'Novembro',
+                  'Dezembro'
+                ]}
+              />
+              </Calendar> 
+          </Content>
         </Container>
   );
 

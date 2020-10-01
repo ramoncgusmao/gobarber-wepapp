@@ -4,6 +4,7 @@ import api from '../services/api';
 interface User{
   id: string;
   name: string;
+  email: string;
   avatar_url: string;
 }
 
@@ -61,12 +62,21 @@ export const AuthProvider: React.FC = ({children}) => {
   
 
   const signOut = useCallback( () =>{
+
+
     localStorage.removeItem('@GoBarber:token');
     localStorage.removeItem('@GoBarber:user');
 
     setData({} as AuthState);
   }, []);
   
+
+  const updateUser = useCallback( (user: User) => {
+    setData({
+      token: data.token,
+      user, 
+    })
+  }, [setData])
   return (
     <AuthContext.Provider value={{ user: data.user, signIn, signOut }}>
     {children}

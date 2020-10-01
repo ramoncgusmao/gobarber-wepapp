@@ -1,10 +1,10 @@
-import React, { useCallback, useRef } from 'react';
-import { Container, Content } from './styles';
+import React, { useCallback, useRef, ChangeEvent } from 'react';
+import { Container, Content, AvatarInput } from './styles';
 import { FormHandles } from '@unform/core';
-import { FiUser, FiMail, FiLock, FiArrowLeft } from 'react-icons/fi';
+import { FiUser, FiMail, FiLock, FiArrowLeft, FiCamera, FiSkipBack } from 'react-icons/fi';
 
 import * as Yup from 'yup';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import api from '../../services/api';
 import { useToast } from '../../hooks/Toast';
 import getValidationErrors from '../../utils/getValidationErrors';
@@ -12,6 +12,7 @@ import getValidationErrors from '../../utils/getValidationErrors';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import { Form } from '@unform/web';
+import { useAuth } from '../../hooks/Auth';
 
 interface ProfileFormData {
   name: string;
@@ -22,7 +23,8 @@ interface ProfileFormData {
 const Profile: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const history = useHistory();
-  const {addToast} = useToast();
+  const { addToast } = useToast();
+  const { user, updateUser } = useAuth();
   const handleSubmit = useCallback(async (data: ProfileFormData) => {
     try {
 
@@ -61,25 +63,74 @@ const Profile: React.FC = () => {
       }
     }
     console.log(data);
-  }, [addToast, history ]);
+  }, [addToast, history]);
 
+  const handleAvatarChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    
+    if (e.target.files) {
+      const data = new FormData();
+      data.append('avatar', e.target.files[0]);
 
+      api.patch('/users/avatar', data).then(() => {
+     
+      }).then(response => {
+
+        addToast({
+          type: 'success',
+          title: 'Avatar atualizado',
+        })
+      updateUser(responde.data);
+
+    }
+
+  }}, [addToast, updateUser]);
 
   return (
     <Container>
+      <header>
+        <div>
+
+          <Link to="/dashboard">
+            <FiArrowLeft />
+          </Link>
+        </div>
+      </header>
+
       <Content>
-          <Form ref={formRef} onSubmit={handleSubmit}>
-            <h1>Meu perfil</h1>
-            <Input name="name" icon={FiUser} placeholder="Nome" />
-            <Input name="email" icon={FiMail} placeholder="E-mail" />
-            <Input name="password" icon={FiLock} type="password" placeholder="Senha" />
-            <Button type="submit">Cadastrar</Button>
+        <Form ref={formRef} onSubmit={handleSubmit}
+          initialData={{
+            name: user.name,
+            email: user.email,
+          }}>
 
-          </Form>
+          <AvatarInput>
 
-         
+            <img src={user.avatar_url} alt={user.name} />
+            <label htmlFor="avatar">
+              <FiCamera />
 
-      
+              <input type="file" id="avatar" onChange={handleAvatarChange} />
+            </label>
+          </AvatarInput>
+
+          <h1>Meu perfil</h1>
+
+          <Input name="name" icon={FiUser} placeholder="Nome" />
+          <Input name="email" icon={FiMail} placeholder="E-mail" />
+          <Input
+            containerStyle={{ marginTop: 24 }}
+            name="old_password" icon={FiLock} type="password" placeholder="Senha atual" />
+          <Input name="password" icon={FiLock} type="password" placeholder="Senha nova" />
+          <Input name="password_confirmation" icon={FiLock} type="password" placeholder="Confirmar senha" />
+
+
+          <Button type="submit">Cadastrar</Button>
+
+        </Form>
+
+
+
+
       </Content>
 
     </Container>

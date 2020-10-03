@@ -18,6 +18,8 @@ interface ProfileFormData {
   name: string;
   email: string;
   password: string;
+  old_password: string;
+  password_confirmation: string;
 }
 
 const Profile: React.FC = () => {
@@ -33,20 +35,42 @@ const Profile: React.FC = () => {
         name: Yup.string().required('Nome obrigatório'),
         email: Yup.string().required('E-mail obrigatorio')
           .email('Digite um e-mail valido'),
-        password: Yup.string().min(6, "No mínimo 6 digitos"),
+        old_password: Yup.string(),
+        password: Yup.string().when('old_password', {
+          is: val => !!val.length,
+          then: Yup.string().required(),
+          otherwise: Yup.string(),
+        }),
+        password_confirmation: Yup.string().when('old_password', {
+          is: val => !!val.length,
+          then: Yup.string().required(),
+          otherwise: Yup.string(),
+        }).oneOf([Yup.ref('password')], 'as senhas precisam ser iguais'),
       });
       await schema.validate(data, {
         abortEarly: false,
       });
 
-      await api.post('/users', data);
+      const {name, email, password, old_password, password_confirmation} = data;
 
-      history.push('/');
+      const formData = {
+        name,
+        email, ...(old_password ? {
+        old_password,
+        password,
+        password_confirmation,
+      } : {}),
+    };
+
+      const response = await api.put('/profile', formData);
+
+      updateUser(response.data);
+      history.push('/dashboard');
 
       addToast({
         type: 'success',
-        title: 'Cadastro realizado',
-        description: 'Você já pode fazer seu logon no GoBarber!',
+        title: 'Perfil Atualizado',
+        description: 'Suas informações de perfil foram atualizadas com sucesso!',
       });
     } catch (err) {
 
@@ -58,7 +82,7 @@ const Profile: React.FC = () => {
         addToast({
           type: 'error',
           title: 'Erro no cadastro',
-          description: 'Ocorreu um erro ao cadastrar, tente novamente',
+          description: 'Ocorreu um erro ao atualizar perfil, tente novamente',
         });
       }
     }
@@ -71,17 +95,15 @@ const Profile: React.FC = () => {
       const data = new FormData();
       data.append('avatar', e.target.files[0]);
 
-      api.patch('/users/avatar', data).then(() => {
-     
-      }).then(response => {
+      api.patch('/users/avatar', data).then(response => {
 
         addToast({
           type: 'success',
           title: 'Avatar atualizado',
         })
-      updateUser(responde.data);
+      updateUser(response.data);
 
-    }
+    });
 
   }}, [addToast, updateUser]);
 
@@ -134,7 +156,7 @@ const Profile: React.FC = () => {
       </Content>
 
     </Container>
-  )
+  );
 };
 
 export default Profile;
